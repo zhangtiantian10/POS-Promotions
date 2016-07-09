@@ -59,7 +59,7 @@ describe('POS', function(){
     it('should return right data', function(){
       var pos = new POS();
       pos.setInfoes(infoes);
-      expect(pos.print(data)).toEqual('可口可乐 3.00元 5瓶 加多宝 4.00元 3罐');
+      expect(pos.print(data)).toEqual('可口可乐 3.00元 5瓶 15.00元 加多宝 4.00元 3罐 12.00元');
     });
   });
 
@@ -113,12 +113,12 @@ describe('POS', function(){
         'ITEM000005'
       ]);
       pos.setInfoes(infoes);
-      expect(pos.print(data)).toEqual('可口可乐 3.00元 5瓶[X] 加多宝 4.00元 3罐');
+      expect(pos.print(data)).toEqual('可口可乐 3.00元 5瓶 15.00元[X] 加多宝 4.00元 3罐 12.00元');
       console.log(pos.print(data));
     });
   });
 
-  describe('sameCodeCount',function(){
+  describe('sameCodeCount not with "-"',function(){
     var data = [
         'ITEM000001',
         'ITEM000001',
@@ -138,6 +138,54 @@ describe('POS', function(){
       // pos.setInfoes(infoes);
       expect(pos.sameCodeCount(data)).toEqual([{barcode: 'ITEM000001', count: 5}, {barcode: 'ITEM000004', count: 3}]);
       console.log(pos.sameCodeCount(data));
+    });
+  });
+
+  describe('sameCodeCount with "-"',function(){
+    var data = [
+        'ITEM000001',
+        'ITEM000001',
+        'ITEM000001',
+        'ITEM000001',
+        'ITEM000001',
+        'ITEM000003-5',
+        'ITEM000004',
+        'ITEM000004',
+        'ITEM000004'
+    ];
+    it('should return right data', function(){
+      var pos = new POS();
+      // pos.set([
+      //   'ITEM000001',
+      //   'ITEM000005'
+      // ]);
+      // pos.setInfoes(infoes);
+      expect(pos.sameCodeCount(data)).toEqual([{barcode: 'ITEM000001', count: 5}, {barcode: 'ITEM000003' , count: 5}, {barcode: 'ITEM000004', count: 3}]);
+      console.log(pos.sameCodeCount(data));
+    });
+  });
+
+  describe('print with price when barcode have "-"',function(){
+    var data = [
+        'ITEM000001',
+        'ITEM000001',
+        'ITEM000001',
+        'ITEM000001',
+        'ITEM000001',
+        'ITEM000003-5',
+        'ITEM000004',
+        'ITEM000004',
+        'ITEM000004'
+    ];
+    it('should return right data', function(){
+      var pos = new POS();
+      pos.set([
+        'ITEM000001',
+        'ITEM000005'
+      ]);
+      pos.setInfoes(infoes);
+      expect(pos.print(data)).toEqual('可口可乐 3.00元 5瓶 15.00元[X] 雪碧 3.00元 5瓶 15.00元 加多宝 4.00元 3罐 12.00元');
+      console.log(pos.print(data));
     });
   });
 
